@@ -16,6 +16,17 @@
 
 Vagrant.configure(2) do |config|
 
+    config.vm.define "nfs" do |nfs|
+        nfs.vm.box = "ubuntu/trusty64"
+			config.vm.provider "virtualbox" do |v|
+				v.cpus = 1
+				v.memory = 1024
+			end
+        nfs.vm.hostname = "nfs"
+		nfs.vm.network "private_network", ip: "192.168.99.104"
+		nfs.vm.provision :shell, path: "install-nfs.sh"
+	end
+
 	config.vm.define "rancher" do |rancher|
         rancher.vm.box = "ubuntu/trusty64"
 			config.vm.provider "virtualbox" do |v|
@@ -64,4 +75,5 @@ Vagrant.configure(2) do |config|
 		node3.vm.provision :shell, path: "install-docker.sh"
 		node3.vm.provision :shell, path: "install-node.sh"
 	end
+	
 end

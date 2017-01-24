@@ -23,7 +23,8 @@ sudo apt-get purge lxc-docker
 sudo apt-cache policy docker-engine
 sudo apt-get upgrade -y
 sudo apt-get install linux-image-extra-$(uname -r) -y
-sudo apt-get install docker-engine=1.12.2-0~trusty -y --force-yes
+#sudo apt-get install docker-engine=1.12.3-0~trusty -y --force-yes
+sudo apt-get install docker-engine -y --force-yes
 sudo service docker start
 sudo groupadd docker
 sudo usermod -aG docker vagrant
@@ -36,17 +37,9 @@ sudo pip install docker-compose
 	################     Updating host and ufw                ###################
 	
 
-#### Some network hardening
 sudo ufw --force enable
-sudo sed -i 's|DEFAULT_FORWARD_POLICY="DROP"|DEFAULT_FORWARD_POLICY="ACCEPT"|g' /etc/default/ufw
-sudo ufw --force reload
-sudo ufw allow 22/tcp
-sudo ufw allow 2375/tcp
-sudo ufw allow 2376/tcp
-	################     Updating host and ufw                ###################
-	
-sudo ufw --force enable
-sudo sed -i 's|DEFAULT_FORWARD_POLICY="DROP"|DEFAULT_FORWARD_POLICY="ACCEPT"|g' /etc/default/ufw
+
+sudo sed -i 's|DEFAULT_FORWARD_POLICY="ACCEPT"|DEFAULT_FORWARD_POLICY="DROP"|g' /etc/default/ufw
 sudo ufw --force reload 
 sudo ufw allow 22/tcp
 sudo ufw allow 2375/tcp
@@ -56,7 +49,7 @@ sudo ufw allow 2376/tcp
 ip=$(ifconfig eth1 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}')
 
 #### Make docker listening on unix socket and eth1
-sudo echo DOCKER_OPTS=\"-D --tls=false -H unix:///var/run/docker.sock -H tcp://$ip:2375\" >> /etc/default/docker
+sudo echo DOCKER_OPTS=\"-D --icc=false --tls=false -H unix:///var/run/docker.sock -H tcp://$ip:2375\" >> /etc/default/docker
 sudo service docker restart
 
 echo "Build completed at      :" >> /tmp/build
